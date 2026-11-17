@@ -7,14 +7,16 @@ Tailseek is a [DeepSeek Harness][harness] plugin that discovers other Harness in
 ## Quick start
 
 1. Connect both devices to the same Tailscale network.
-2. On both Harness instances, open **Plugins → Add plugin** and enter the absolute path to the Tailseek `.tgz` package on that device. See [Package from source](#package-from-source) to create one.
+2. On both Harness instances, open **Plugins → Add plugin**, enter `github:supralune/dsh-tailseek`, and install it.
 3. Select **Tailseek** in the left sidebar and choose an instance.
 
-To install into the web profile from the CLI, replace `<package.tgz>` with the path to the package.
+You can also install it into the web profile from the CLI.
 
 ```sh
-dsh plugin --profile web add "<package.tgz>"
+dsh plugin --profile web add github:supralune/dsh-tailseek
 ```
+
+To use a local package, enter its absolute `.tgz` path in **Add plugin**. See [Package from source](#package-from-source) to create one.
 
 ## Usage
 
