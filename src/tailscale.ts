@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { existsSync } from 'node:fs';
-import { delimiter, join, win32 } from 'node:path';
+import { posix, win32 } from 'node:path';
 import { homedir } from 'node:os';
 import { tailIP } from './protocol.js';
 import type { Candidate } from './types.js';
@@ -20,16 +20,24 @@ export type Execute = (file: string, args: string[], options: { timeout: number;
 
 export function cliCandidates(platform: NodeJS.Platform = process.platform, env: NodeJS.ProcessEnv = process.env,
   home = homedir(), exists = existsSync): string[] {
-  const executable = platform === 'win32' ? 'tailscale.exe' : 'tailscale';
-  const separator = platform === 'win32' ? ';' : delimiter;
-  const pathJoin = platform === 'win32' ? win32.join : join;
-  const path = (env.PATH ?? env.Path ?? '').split(separator).filter(Boolean).map(dir => pathJoin(dir, executable));
+  const isWindows = platform === 'win32';
+  const path = isWindows ? win32 : posix;
+  const executable = isWindows ? 'tailscale.exe' : 'tailscale';
+  const fromPath = (env.PATH ?? env.Path ?? '').split(path.delimiter)
+    .filter(Boolean).map(dir => path.join(dir, executable));
   const standard = platform === 'darwin'
-    ? ['/Applications/Tailscale.app/Contents/MacOS/Tailscale', join(home, 'Applications/Tailscale.app/Contents/MacOS/Tailscale'), '/opt/homebrew/bin/tailscale', '/usr/local/bin/tailscale']
-    : platform === 'win32'
-      ? [win32.join(env.ProgramFiles ?? 'C:\\Program Files', 'Tailscale', executable), ...(env.LOCALAPPDATA ? [win32.join(env.LOCALAPPDATA, 'Tailscale', executable)] : [])]
+    ? [
+      '/Applications/Tailscale.app/Contents/MacOS/Tailscale',
+      path.join(home, 'Applications/Tailscale.app/Contents/MacOS/Tailscale'),
+      '/opt/homebrew/bin/tailscale', '/usr/local/bin/tailscale',
+    ]
+    : isWindows
+      ? [
+        path.join(env.ProgramFiles ?? 'C:\\Program Files', 'Tailscale', executable),
+        ...(env.LOCALAPPDATA ? [path.join(env.LOCALAPPDATA, 'Tailscale', executable)] : []),
+      ]
       : ['/usr/bin/tailscale', '/usr/local/bin/tailscale', '/opt/bin/tailscale'];
-  return [...new Set([...path, ...standard].filter(file => exists(file)))];
+  return [...new Set([...fromPath, ...standard].filter(file => exists(file)))];
 }
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('invalid-tailscale-response');

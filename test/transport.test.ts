@@ -18,7 +18,8 @@ function ad(): DiscoveredInstance { return { protocol: 1, id: instanceId('target
 test('platform CLI lookup handles PATH, Windows spaces, macOS app and Linux paths', () => {
   assert.deepEqual(cliCandidates('win32', { PATH: 'D:\\Tools', ProgramFiles: 'D:\\Program Files' }, '', () => true), ['D:\\Tools\\tailscale.exe', 'D:\\Program Files\\Tailscale\\tailscale.exe']);
   assert.ok(cliCandidates('darwin', { PATH: '/tools' }, '/home/test', () => true).includes('/Applications/Tailscale.app/Contents/MacOS/Tailscale'));
-  assert.equal(cliCandidates('linux', { PATH: '/tools' }, '', () => true)[0], '/tools/tailscale');
+  const linuxCandidates = cliCandidates('linux', { PATH: '/tools:/opt/tools' }, '', () => true);
+  assert.deepEqual(linuxCandidates.slice(0, 2), ['/tools/tailscale', '/opt/tools/tailscale']);
   assert.deepEqual(cliCandidates('linux', {}, '', () => false), []);
 });
 test('wire validation strips untrusted fields, refuses node impersonation and incompatible protocols', () => {
