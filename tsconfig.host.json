@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "outDir": "lib/types/host", "types": ["node"], "lib": ["ES2023", "DOM"] },
+  "include": ["src/**/*.ts"], "exclude": ["src/client.ts", "src/directory-client.ts", "src/client/**"]
+}

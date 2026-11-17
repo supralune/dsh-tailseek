@@ -1,0 +1,8 @@
+node_modules/
+*.tgz
+.runtime/
+test-results/
+playwright-report/
+.DS_Store
+/docs/
+/AGENT.md

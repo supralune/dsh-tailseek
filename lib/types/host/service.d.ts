@@ -1,0 +1,53 @@
+import { Tailscale } from './tailscale.js';
+import { Discovery } from './discovery.js';
+import { TargetView } from './view.js';
+import type { DirectoryBrowser } from './directory.js';
+import type { IncomingMessage, Server, ServerResponse, OutgoingHttpHeaders } from 'node:http';
+import type { Duplex } from 'node:stream';
+import type { Advertisement, ScanStamp, Status, ViewEntry } from './types.js';
+export interface ServiceOptions {
+    id: string;
+    version: string;
+    label: string;
+    surface: 'web' | 'desktop';
+    upstream: () => string;
+    credentials: () => OutgoingHttpHeaders;
+    tailscale?: Tailscale;
+    ports?: readonly number[];
+    directoryBrowser?: Promise<DirectoryBrowser | undefined>;
+    remoteAttachment?: (req: IncomingMessage, res: ServerResponse) => Promise<void>;
+}
+export declare class Tailseek {
+    readonly id: string;
+    readonly version: string;
+    readonly label: string;
+    readonly surface: 'web' | 'desktop';
+    readonly upstream: () => string;
+    readonly credentials: () => OutgoingHttpHeaders;
+    readonly tailscale: Tailscale;
+    readonly ports: readonly number[];
+    private readonly directoryBrowser?;
+    private readonly remoteAttachment?;
+    readonly boot: string;
+    readonly discovery: Discovery;
+    readonly views: Map<string, TargetView>;
+    readonly sockets: Set<Duplex>;
+    error: string | undefined;
+    closed: boolean;
+    private scanInProgress?;
+    private completedScans;
+    server?: Server;
+    ip?: string;
+    constructor({ id, version, label, surface, upstream, credentials, tailscale, ports, directoryBrowser, remoteAttachment }: ServiceOptions);
+    advertisement(): Advertisement;
+    admit(req: IncomingMessage): Promise<boolean>;
+    matches(req: IncomingMessage): boolean;
+    startListener(ip: string): Promise<void>;
+    tick(): Promise<void>;
+    refresh(): ScanStamp;
+    private scan;
+    snapshot(): Status;
+    open(key: string): Promise<ViewEntry>;
+    release(id: string): Promise<void>;
+    close(): Promise<void>;
+}

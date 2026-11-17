@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "rootDir": ".", "declaration": false, "emitDeclarationOnly": false, "noEmit": true, "types": ["node"] },
+  "include": ["test/**/*.ts", "src/**/*.ts"],
+  "exclude": ["src/client.ts", "src/directory-client.ts", "src/client/**"]
+}

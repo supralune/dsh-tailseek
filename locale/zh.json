@@ -1,0 +1,1 @@
+{"meta":{"title":"Tailseek","description":"通过现有 Tailscale 网络发现 Harness 实例，在 Harness 内打开目标实例的原生界面。持续显示目标、支持切回本机，断线时暂停提交且不回退到本机。当前为预览版本；实际验证的版本与浏览器限制见 README。"}}

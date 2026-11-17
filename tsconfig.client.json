@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "outDir": "lib/types/client", "types": ["react"], "lib": ["ES2023", "DOM", "DOM.Iterable"] },
+  "include": ["src/client.ts", "src/types.ts"]
+}
