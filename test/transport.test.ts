@@ -27,7 +27,12 @@ test('wire validation strips untrusted fields, refuses node impersonation and in
   assert.equal('token' in parsed, false);
   assert.throws(() => parseAdvertisement(item, 'another-node'));
   assert.throws(() => parseAdvertisement({ ...item, protocol: 2 }, 'self'));
-  assert.equal(parseAdvertisement({ ...item, version: '0.2.3' }, 'self').compatible, false);
+  for (const version of ['0.2.2-rc.2', '0.2.2-rc.3', '0.2.2-rc.4', '0.2.2', '0.2.3-rc.1', '0.2.3', '1.0.0']) {
+    assert.equal(parseAdvertisement({ ...item, version }, 'self').compatible, true, version);
+  }
+  for (const version of ['0.2.1', '0.2.2-rc.1', '0.2.2-alpha.1', '', 'invalid']) {
+    assert.equal(parseAdvertisement({ ...item, version }, 'self').compatible, false, version);
+  }
   assert.equal(equalSecret('€', 'abc'), false);
   assert.equal(tailIP('100.64.0.1'), true); assert.equal(tailIP('100.128.0.1'), false);
   assert.equal(tailIP('fd7a:115c:a1e0::1'), true); assert.equal(tailIP('::1'), false);

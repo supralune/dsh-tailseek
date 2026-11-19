@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { isIP } from 'node:net';
+import { satisfies } from 'semver';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Advertisement } from './types.js';
 
@@ -29,7 +30,7 @@ export function tailIP(ip: unknown): ip is string {
   return isIP(ip) === 6 && ip.toLowerCase().startsWith('fd7a:115c:a1e0:');
 }
 export function compatible(version: string): boolean {
-  return /^0\.2\.2-rc\.[23]$/.test(version);
+  return satisfies(version, '>=0.2.2-rc.2', { includePrerelease: true });
 }
 export function parseAdvertisement(value: unknown, nodeId: string): Advertisement & { compatible: boolean } {
   if (typeof value !== 'object' || value === null) throw new Error('incompatible-advertisement');
